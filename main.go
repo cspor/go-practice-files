@@ -9,9 +9,6 @@ import (
 	"github.com/cspor/go-practice-files/filesystem"
 	"github.com/cspor/go-practice-files/row"
 	"github.com/cspor/go-practice-files/timer"
-	"io"
-	"io/ioutil"
-	"os"
 	"sync"
 	"time"
 )
@@ -32,12 +29,12 @@ func main() {
 
 	// write all files in source directory to destination
 	writeStart := time.Now()
-	writeFilesInDirToDestination(config.PagesFolder, config.BuildsFolder, "export_write")
+	filesystem.WriteFilesInDirToDestination(config.PagesFolder, config.BuildsFolder, "export_write")
 	timer.Took("Writing to export", writeStart)
 
 	// copy all files in source directory to destination
 	copyStart := time.Now()
-	copyFilesInDirToDestination(config.PagesFolder, filesystem.OpenFileToAppend(config.BuildsFolder, "export_copy"))
+	filesystem.CopyFilesInDirToDestination(config.PagesFolder, filesystem.OpenFileToAppend(config.BuildsFolder, "export_copy"))
 	timer.Took("Copying to export", copyStart)
 }
 
@@ -55,9 +52,8 @@ func writeUUIDsToFile(folderName string, fileName string, count int) {
 
 	bufferedWriter := bufio.NewWriter(file)
 
-	//
+	// Write new rows to the file
 	for index := 1; index <= count; index++ {
-
 		rowJson, err := json.Marshal(row.NewRow())
 		errorHandler.Check(err)
 
@@ -66,15 +62,6 @@ func writeUUIDsToFile(folderName string, fileName string, count int) {
 		errorHandler.Check(err)
 
 		bufferedWriter.WriteString("\n")
-
-		//bufferedWriter.WriteString(
-		//	"Urna blandit amet arcu ante ridiculus convallis facilisi mollis non condimentum vestibulum maecenas sodales eu sagittis porta. At mi ac elit nam sed imperdiet sagittis a taciti consequat malesuada senectus nec a a adipiscing pulvinar amet lacinia viverra pretium torquent. Sed elit sociis praesent senectus id scelerisque per proin ligula elit himenaeos sagittis eleifend aenean vehicula. Iaculis molestie et vestibulum dignissim parturient praesent risus sed suspendisse cum arcu urna urna nec vestibulum primis donec blandit. Ac ut quisque aptent nisi at scelerisque a aenean sed varius ullamcorper natoque ut euismod vehicula. Ad sem tempus curae a parturient congue tristique adipiscing fringilla massa consectetur suspendisse sed imperdiet primis nam luctus vitae eu varius ultricies integer non massa a a mus. Scelerisque ad consectetur nam viverra sem cras condimentum egestas bibendum maecenas a proin orci libero tortor nam ad dis.Per porta ac condimentum et ad placerat parturient sodales." +
-		//		"Urna blandit amet arcu ante ridiculus convallis facilisi mollis non condimentum vestibulum maecenas sodales eu sagittis porta. At mi ac elit nam sed imperdiet sagittis a taciti consequat malesuada senectus nec a a adipiscing pulvinar amet lacinia viverra pretium torquent. Sed elit sociis praesent senectus id scelerisque per proin ligula elit himenaeos sagittis eleifend aenean vehicula. Iaculis molestie et vestibulum dignissim parturient praesent risus sed suspendisse cum arcu urna urna nec vestibulum primis donec blandit. Ac ut quisque aptent nisi at scelerisque a aenean sed varius ullamcorper natoque ut euismod vehicula. Ad sem tempus curae a parturient congue tristique adipiscing fringilla massa consectetur suspendisse sed imperdiet primis nam luctus vitae eu varius ultricies integer non massa a a mus. Scelerisque ad consectetur nam viverra sem cras condimentum egestas bibendum maecenas a proin orci libero tortor nam ad dis.Per porta ac condimentum et ad placerat parturient sodales." +
-		//		"Urna blandit amet arcu ante ridiculus convallis facilisi mollis non condimentum vestibulum maecenas sodales eu sagittis porta. At mi ac elit nam sed imperdiet sagittis a taciti consequat malesuada senectus nec a a adipiscing pulvinar amet lacinia viverra pretium torquent. Sed elit sociis praesent senectus id scelerisque per proin ligula elit himenaeos sagittis eleifend aenean vehicula. Iaculis molestie et vestibulum dignissim parturient praesent risus sed suspendisse cum arcu urna urna nec vestibulum primis donec blandit. Ac ut quisque aptent nisi at scelerisque a aenean sed varius ullamcorper natoque ut euismod vehicula. Ad sem tempus curae a parturient congue tristique adipiscing fringilla massa consectetur suspendisse sed imperdiet primis nam luctus vitae eu varius ultricies integer non massa a a mus. Scelerisque ad consectetur nam viverra sem cras condimentum egestas bibendum maecenas a proin orci libero tortor nam ad dis.Per porta ac condimentum et ad placerat parturient sodales." +
-		//		"Urna blandit amet arcu ante ridiculus convallis facilisi mollis non condimentum vestibulum maecenas sodales eu sagittis porta. At mi ac elit nam sed imperdiet sagittis a taciti consequat malesuada senectus nec a a adipiscing pulvinar amet lacinia viverra pretium torquent. Sed elit sociis praesent senectus id scelerisque per proin ligula elit himenaeos sagittis eleifend aenean vehicula. Iaculis molestie et vestibulum dignissim parturient praesent risus sed suspendisse cum arcu urna urna nec vestibulum primis donec blandit. Ac ut quisque aptent nisi at scelerisque a aenean sed varius ullamcorper natoque ut euismod vehicula. Ad sem tempus curae a parturient congue tristique adipiscing fringilla massa consectetur suspendisse sed imperdiet primis nam luctus vitae eu varius ultricies integer non massa a a mus. Scelerisque ad consectetur nam viverra sem cras condimentum egestas bibendum maecenas a proin orci libero tortor nam ad dis.Per porta ac condimentum et ad placerat parturient sodales." +
-		//		"Urna blandit amet arcu ante ridiculus convallis facilisi mollis non condimentum vestibulum maecenas sodales eu sagittis porta. At mi ac elit nam sed imperdiet sagittis a taciti consequat malesuada senectus nec a a adipiscing pulvinar amet lacinia viverra pretium torquent. Sed elit sociis praesent senectus id scelerisque per proin ligula elit himenaeos sagittis eleifend aenean vehicula. Iaculis molestie et vestibulum dignissim parturient praesent risus sed suspendisse cum arcu urna urna nec vestibulum primis donec blandit. Ac ut quisque aptent nisi at scelerisque a aenean sed varius ullamcorper natoque ut euismod vehicula. Ad sem tempus curae a parturient congue tristique adipiscing fringilla massa consectetur suspendisse sed imperdiet primis nam luctus vitae eu varius ultricies integer non massa a a mus. Scelerisque ad consectetur nam viverra sem cras condimentum egestas bibendum maecenas a proin orci libero tortor nam ad dis.Per porta ac condimentum et ad placerat parturient sodales." +
-		//		"\n",
-		//)
 	}
 
 	e := bufferedWriter.Flush()
@@ -85,35 +72,4 @@ func writeUUIDsToFile(folderName string, fileName string, count int) {
 	errorHandler.Check(file.Close())
 
 	waitGroup.Done()
-}
-
-func writeFilesInDirToDestination(sourceDirPath string, destinationDirPath string, destinationFileName string) {
-	output := filesystem.OpenFileToAppend(destinationDirPath, destinationFileName)
-
-	folder, _ := os.ReadDir(sourceDirPath)
-
-	for _, fileInFolder := range folder {
-		file, err := os.Open(sourceDirPath + "/" + fileInFolder.Name())
-		errorHandler.Check(err)
-
-		data, e := ioutil.ReadAll(file)
-		errorHandler.Check(e)
-
-		output.Write(data)
-		file.Close()
-	}
-}
-
-func copyFilesInDirToDestination(sourceDirPath string, destination io.Writer) {
-
-	folder, _ := os.ReadDir(sourceDirPath)
-
-	for _, fileInFolder := range folder {
-		file, err := os.Open(sourceDirPath + "/" + fileInFolder.Name())
-		errorHandler.Check(err)
-
-		bytes, e := io.Copy(destination, file)
-		_ = bytes
-		errorHandler.Check(e)
-	}
 }
