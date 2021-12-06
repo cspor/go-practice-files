@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/cspor/go-practice-files/config"
-	"github.com/cspor/go-practice-files/errorHandler"
-	"github.com/cspor/go-practice-files/filesystem"
-	"github.com/cspor/go-practice-files/row"
-	"github.com/cspor/go-practice-files/timer"
+	"github.com/cspor/go-practice-files/models/row"
+	"github.com/cspor/go-practice-files/services/errorHandler"
+	"github.com/cspor/go-practice-files/services/filesystem"
+	"github.com/cspor/go-practice-files/services/timer"
+	"os"
 	"sync"
 	"time"
 )
@@ -36,6 +37,10 @@ func main() {
 	copyStart := time.Now()
 	filesystem.CopyFilesInDirToDestination(config.PagesFolder, filesystem.OpenFileToAppend(config.BuildsFolder, "export_copy"))
 	timer.Took("Copying to export", copyStart)
+
+	// Cleanup
+	err := os.RemoveAll(config.ParentFolder)
+	errorHandler.Check(err)
 }
 
 // writePages Writes rowCount rows to pageCount pages

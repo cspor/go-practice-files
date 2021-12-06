@@ -2,7 +2,7 @@ package filesystem
 
 import (
 	"github.com/cspor/go-practice-files/config"
-	"github.com/cspor/go-practice-files/errorHandler"
+	"github.com/cspor/go-practice-files/services/errorHandler"
 	"io"
 	"io/ioutil"
 	"os"
