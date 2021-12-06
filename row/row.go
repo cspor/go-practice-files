@@ -1,7 +1,7 @@
 package row
 
 import (
-	"files/errorHandler"
+	"github.com/cspor/go-practice-files/errorHandler"
 	"github.com/google/uuid"
 )
 

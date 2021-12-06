@@ -1,7 +1,7 @@
 package filesystem
 
 import (
-	"files/errorHandler"
+	"github.com/cspor/go-practice-files/errorHandler"
 	"os"
 )
 

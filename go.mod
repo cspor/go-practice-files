@@ -1,4 +1,4 @@
-module files
+module github.com/cspor/go-practice-files
 
 go 1.17
 
