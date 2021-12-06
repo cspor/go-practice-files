@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"github.com/cspor/go-practice-files/config"
 	"github.com/cspor/go-practice-files/errorHandler"
 	"github.com/cspor/go-practice-files/filesystem"
 	"github.com/cspor/go-practice-files/row"
@@ -15,22 +16,15 @@ import (
 	"time"
 )
 
-const pagesFolder = "./results/pages"
-const buildsFolder = "./results/builds"
-const extension = "jsonl"
-
-const pageCount = 100
-const rowCount = 5_000
-
 var waitGroup = sync.WaitGroup{}
 
 func main() {
-	filesystem.RemakeFolder(pagesFolder)
-	filesystem.RemakeFolder(buildsFolder)
+	filesystem.RemakeFolder(config.PagesFolder)
+	filesystem.RemakeFolder(config.BuildsFolder)
 
 	pagesStart := time.Now()
 
-	writePages(pageCount, rowCount)
+	writePages(config.PageCount, config.RowCount)
 
 	waitGroup.Wait()
 
@@ -38,12 +32,12 @@ func main() {
 
 	// write all files in source directory to destination
 	writeStart := time.Now()
-	writeFilesInDirToDestination(pagesFolder, buildsFolder, "export_write")
+	writeFilesInDirToDestination(config.PagesFolder, config.BuildsFolder, "export_write")
 	timer.Took("Writing to export", writeStart)
 
 	// copy all files in source directory to destination
 	copyStart := time.Now()
-	copyFilesInDirToDestination(pagesFolder, openFileToAppend(buildsFolder, "export_copy"))
+	copyFilesInDirToDestination(config.PagesFolder, filesystem.OpenFileToAppend(config.BuildsFolder, "export_copy"))
 	timer.Took("Copying to export", copyStart)
 }
 
@@ -51,34 +45,13 @@ func main() {
 func writePages(pageCount int, rowCount int) {
 	for index := 1; index <= pageCount; index++ {
 		waitGroup.Add(1)
-		go writeUUIDsToFile(pagesFolder, fmt.Sprint("page_", index), rowCount)
+		go writeUUIDsToFile(config.PagesFolder, fmt.Sprint("page_", index), rowCount)
 	}
-}
-
-// buildPath Builds the file path from the folderName and fileName
-func buildPath(folderName string, fileName string) string {
-	return folderName + "/" + fileName + "." + extension
-}
-
-// openFileToAppend Opens a file and readies it to be appended to
-func openFileToAppend(folderName string, fileName string) *os.File {
-	file, err := os.OpenFile(buildPath(folderName, fileName), os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm)
-	errorHandler.Check(err)
-
-	return file
-}
-
-// openFileToRead Opens a file for reading
-func openFileToRead(folderName string, fileName string) *os.File {
-	file, err := os.Open(buildPath(folderName, fileName))
-	errorHandler.Check(err)
-
-	return file
 }
 
 // writeUUIDsToFile writes count Rows to the file
 func writeUUIDsToFile(folderName string, fileName string, count int) {
-	file := openFileToAppend(folderName, fileName)
+	file := filesystem.OpenFileToAppend(folderName, fileName)
 
 	bufferedWriter := bufio.NewWriter(file)
 
@@ -115,7 +88,7 @@ func writeUUIDsToFile(folderName string, fileName string, count int) {
 }
 
 func writeFilesInDirToDestination(sourceDirPath string, destinationDirPath string, destinationFileName string) {
-	output := openFileToAppend(destinationDirPath, destinationFileName)
+	output := filesystem.OpenFileToAppend(destinationDirPath, destinationFileName)
 
 	folder, _ := os.ReadDir(sourceDirPath)
 
